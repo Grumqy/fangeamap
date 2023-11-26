@@ -36,6 +36,14 @@
   function loadSVG() {
     var svgObject = document.getElementById('svgObject');
     var svg = svgObject.contentDocument.querySelector('svg');
+
+    // Pobierz rozmiary warstwy SVG
+    var svgBounds = svg.getBoundingClientRect();
+
+    // Skaluj warstwę SVG, aby pasowała do rozmiarów mapy
+    svg.style.width = svgBounds.width + 'px';
+    svg.style.height = svgBounds.height + 'px';
+
     svgLayer.addLayer(L.svgOverlay(svg, svgLayer.getBounds()));
   }
 
