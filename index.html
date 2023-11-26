@@ -6,6 +6,17 @@
   <title>Interaktywna Mapa</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.js"></script>
+  <style>
+    #zoomControls {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+    }
+    #zoomControls button {
+      margin-bottom: 5px;
+    }
+  </style>
 </head>
 <body>
 
@@ -21,6 +32,11 @@
 <!-- Użyj tagu <object> do wczytania pliku SVG -->
 <object id="svgObject" type="image/svg+xml" data="fangea_mapa.svg"></object>
 
+<div id="zoomControls">
+  <button onclick="zoomIn()">+</button>
+  <button onclick="zoomOut()">-</button>
+</div>
+
 <script>
   var svg = document.getElementById('svgObject');
   var panZoom = svgPanZoom(svg, {
@@ -28,9 +44,9 @@
     controlIconsEnabled: true,
     fit: true,
     center: true,
-    mouseWheelZoomEnabled: true, // Włącz przybliżanie i oddalanie za pomocą kółka myszy
-    panEnabled: true, // Włącz swobodne przesuwanie widoku myszą
-    dblClickZoomEnabled: false, // Wyłącz przybliżanie za pomocą podwójnego kliknięcia
+    mouseWheelZoomEnabled: true,
+    panEnabled: true,
+    dblClickZoomEnabled: false,
   });
 
   function toggleLayer() {
@@ -50,6 +66,14 @@
         svg.removeEventListener('click', measureDistance);
       }
     });
+  }
+
+  function zoomIn() {
+    panZoom.zoomIn();
+  }
+
+  function zoomOut() {
+    panZoom.zoomOut();
   }
 </script>
 
