@@ -4,14 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interaktywna Mapa</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.js"></script>
 </head>
 <body>
 
-<div id="map" style="height: 500px; width: 800px;"></div>
 <div>
   <label for="layerCheckbox">Warstwy:</label>
   <input type="checkbox" id="layerCheckbox" onchange="toggleLayer()" checked> Warstwa 1
@@ -21,22 +18,11 @@
   <span id="distanceDisplay"></span>
 </div>
 
+<!-- Użyj tagu <object> do wczytania pliku SVG -->
+<object id="svgObject" type="image/svg+xml" data="fangea_mapa.svg"></object>
+
 <script>
-  var map = L.map('map').setView([0, 0], 2);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
-
-  // Utwórz warstwę SVG
-  var svgLayer = L.svg();
-
-  // Dodaj do mapy
-  svgLayer.addTo(map);
-
-  // Pobierz warstwę SVG
   var svg = document.getElementById('svgObject');
-
-  // Utwórz SVG Pan Zoom obiekt
   var panZoom = svgPanZoom(svg, {
     zoomEnabled: true,
     controlIconsEnabled: true,
@@ -44,31 +30,21 @@
     center: true,
   });
 
-  // Wczytaj grafikę wektorową
-  var svgUrl = 'fangea_mapa.svg';
-  $.get(svgUrl, function (data) {
-    // Dodaj grafikę wektorową do warstwy SVG
-    svg.innerHTML = new XMLSerializer().serializeToString(data.documentElement);
-  });
-
   function toggleLayer() {
-    var svgOverlay = svgLayer._svgOverlay;
-    if ($('#layerCheckbox').is(':checked')) {
-      svgOverlay.addTo(map);
-    } else {
-      svgOverlay.removeFrom(map);
-    }
+    var svgDisplay = $('#svgObject').css('display');
+    $('#svgObject').css('display', svgDisplay === 'none' ? 'block' : 'none');
   }
 
   var measurePoints = [];
   function measureDistance() {
-    map.on('click', function(e) {
-      measurePoints.push(e.latlng);
+    svg.addEventListener('click', function(e) {
+      var point = panZoom.getPoint();
+      measurePoints.push({ x: point.x, y: point.y });
       if (measurePoints.length === 2) {
-        var distance = measurePoints[0].distanceTo(measurePoints[1]);
-        $('#distanceDisplay').text('Odległość: ' + distance.toFixed(2) + ' metrów');
+        var distance = Math.sqrt(Math.pow(measurePoints[1].x - measurePoints[0].x, 2) + Math.pow(measurePoints[1].y - measurePoints[0].y, 2));
+        $('#distanceDisplay').text('Odległość: ' + distance.toFixed(2) + ' px');
         measurePoints = [];
-        map.off('click');
+        svg.removeEventListener('click', measureDistance);
       }
     });
   }
