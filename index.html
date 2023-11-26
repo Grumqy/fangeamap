@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interaktywna Mapa</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+
+<div id="map" style="height: 500px;"></div>
+<div>
+  <label for="layerCheckbox">Warstwy:</label>
+  <input type="checkbox" id="layerCheckbox" onchange="toggleLayer()" checked> Warstwa 1
+</div>
+<div>
+  <button onclick="measureDistance()">Pomiń odległość</button>
+  <span id="distanceDisplay"></span>
+</div>
+
+<script>
+  // Stworzenie mapy Leaflet
+  var map = L.map('map').setView([0, 0], 2);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Dodanie warstwy SVG
+  var svgLayer = L.svg();
+  svgLayer.addTo(map);
+
+  // Wczytanie pliku SVG
+  $.get('map.svg', function(data) {
+    var svg = $(data).find('svg');
+    svgLayer.addLayer(L.svgOverlay(svg[0], svg.getBounds()));
+  });
+
+  // Funkcje przybliżania i oddalania
+  map.scrollWheelZoom.disable();
+  map.on('click', function() {
+    map.scrollWheelZoom.enable();
+  });
+
+  // Funkcja przesuwania
+  map.dragging.disable();
+  map.on('click', function() {
+    map.dragging.enable();
+  });
+
+  // Funkcja przełączania warstw
+  function toggleLayer() {
+    var svgOverlay = svgLayer._svgOverlay;
+    if ($('#layerCheckbox').is(':checked')) {
+      svgOverlay.addTo(map);
+    } else {
+      svgOverlay.removeFrom(map);
+    }
+  }
+
+  // Funkcja pomiaru odległości
+  var measurePoints = [];
+  function measureDistance() {
+    map.on('click', function(e) {
+      measurePoints.push(e.latlng);
+      if (measurePoints.length === 2) {
+        var distance = measurePoints[0].distanceTo(measurePoints[1]);
+        $('#distanceDisplay').text('Odległość: ' + distance.toFixed(2) + ' metrów');
+        measurePoints = [];
+        map.off('click');
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
