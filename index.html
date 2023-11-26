@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-omnivore/leaflet-omnivore.min.js"></script>
 </head>
 <body>
 
@@ -20,35 +21,19 @@
   <span id="distanceDisplay"></span>
 </div>
 
-<!-- Użyj tagu <object> do wczytania pliku SVG -->
-<object id="svgObject" type="image/svg+xml" data="fangea_mapa.svg"></object>
-
 <script>
   var map = L.map('map').setView([0, 0], 2);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  var svgLayer = L.svg();
-  svgLayer.addTo(map);
+  // Wczytaj mapę Europy jako GeoJSON przy użyciu leaflet-omnivore
+  var europeLayer = omnivore.geojson('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
+    .addTo(map);
 
-  // Funkcja do wczytania pliku SVG
-  function loadSVG() {
-    var svgObject = document.getElementById('svgObject');
-    var svg = svgObject.contentDocument.querySelector('svg');
-
-    // Pobierz rozmiary warstwy SVG
-    var svgBounds = svg.getBoundingClientRect();
-
-    // Skaluj warstwę SVG, aby pasowała do rozmiarów mapy
-    svg.style.width = svgBounds.width + 'px';
-    svg.style.height = svgBounds.height + 'px';
-
-    svgLayer.addLayer(L.svgOverlay(svg, svgLayer.getBounds()));
-  }
-
-  // Czekaj na załadowanie pliku SVG przed dodaniem warstwy
-  document.getElementById('svgObject').addEventListener('load', loadSVG);
+  // Wczytaj twoją grafikę wektorową jako GeoJSON lub SVG
+  var customLayer = omnivore.svg('fangea_mapa.svg')
+    .addTo(map);
 
   map.scrollWheelZoom.disable();
   map.on('click', function() {
@@ -61,11 +46,10 @@
   });
 
   function toggleLayer() {
-    var svgOverlay = svgLayer._svgOverlay;
     if ($('#layerCheckbox').is(':checked')) {
-      svgOverlay.addTo(map);
+      customLayer.addTo(map);
     } else {
-      svgOverlay.removeFrom(map);
+      customLayer.removeFrom(map);
     }
   }
 
