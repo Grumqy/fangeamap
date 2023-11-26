@@ -20,6 +20,9 @@
   <span id="distanceDisplay"></span>
 </div>
 
+<!-- Użyj tagu <object> do wczytania pliku SVG -->
+<object id="svgObject" type="image/svg+xml" data="fangea_mapa.svg"></object>
+
 <script>
   var map = L.map('map').setView([0, 0], 2);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -29,11 +32,15 @@
   var svgLayer = L.svg();
   svgLayer.addTo(map);
 
-  // Zmiana nazwy pliku SVG na "fangea_mapa.svg"
-  $.get('fangea_mapa.svg', function(data) {
-    var svg = $(data).find('svg');
-    svgLayer.addLayer(L.svgOverlay(svg[0], svg.getBounds()));
-  });
+  // Funkcja do wczytania pliku SVG
+  function loadSVG() {
+    var svgObject = document.getElementById('svgObject');
+    var svg = svgObject.contentDocument.querySelector('svg');
+    svgLayer.addLayer(L.svgOverlay(svg, svgLayer.getBounds()));
+  }
+
+  // Czekaj na załadowanie pliku SVG przed dodaniem warstwy
+  document.getElementById('svgObject').addEventListener('load', loadSVG);
 
   map.scrollWheelZoom.disable();
   map.on('click', function() {
