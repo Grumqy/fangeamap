@@ -7,11 +7,11 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-svg-shape-markers/dist/leaflet-svg-shape-markers.min.js"></script>
+  <script src="https://unpkg.com/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.js"></script>
 </head>
 <body>
 
-<div id="map" style="height: 500px;"></div>
+<div id="map" style="height: 500px; width: 800px;"></div>
 <div>
   <label for="layerCheckbox">Warstwy:</label>
   <input type="checkbox" id="layerCheckbox" onchange="toggleLayer()" checked> Warstwa 1
@@ -27,21 +27,32 @@
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  // Wczytaj twoją grafikę wektorową jako SVG przy użyciu leaflet-svg-shape-markers
-  var svgLayer = L.svgLayer('fangea_mapa.svg').addTo(map);
+  // Utwórz warstwę SVG
+  var svgLayer = L.svg();
 
-  map.scrollWheelZoom.disable();
-  map.on('click', function() {
-    map.scrollWheelZoom.enable();
+  // Dodaj do mapy
+  svgLayer.addTo(map);
+
+  // Pobierz warstwę SVG
+  var svg = document.getElementById('svgObject');
+
+  // Utwórz SVG Pan Zoom obiekt
+  var panZoom = svgPanZoom(svg, {
+    zoomEnabled: true,
+    controlIconsEnabled: true,
+    fit: true,
+    center: true,
   });
 
-  map.dragging.disable();
-  map.on('click', function() {
-    map.dragging.enable();
+  // Wczytaj grafikę wektorową
+  var svgUrl = 'fangea_mapa.svg';
+  $.get(svgUrl, function (data) {
+    // Dodaj grafikę wektorową do warstwy SVG
+    svg.innerHTML = new XMLSerializer().serializeToString(data.documentElement);
   });
 
   function toggleLayer() {
-    var svgOverlay = svgLayer;
+    var svgOverlay = svgLayer._svgOverlay;
     if ($('#layerCheckbox').is(':checked')) {
       svgOverlay.addTo(map);
     } else {
