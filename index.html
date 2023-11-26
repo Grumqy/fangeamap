@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-omnivore/leaflet-omnivore.min.js"></script>
+  <script src="https://unpkg.com/leaflet-svg-shape-markers/dist/leaflet-svg-shape-markers.min.js"></script>
 </head>
 <body>
 
@@ -27,13 +27,8 @@
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  // Wczytaj mapę Europy jako GeoJSON przy użyciu leaflet-omnivore
-  var europeLayer = omnivore.geojson('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
-    .addTo(map);
-
-  // Wczytaj twoją grafikę wektorową jako GeoJSON lub SVG
-  var customLayer = omnivore.svg('fangea_mapa.svg')
-    .addTo(map);
+  // Wczytaj twoją grafikę wektorową jako SVG przy użyciu leaflet-svg-shape-markers
+  var svgLayer = L.svgLayer('fangea_mapa.svg').addTo(map);
 
   map.scrollWheelZoom.disable();
   map.on('click', function() {
@@ -46,10 +41,11 @@
   });
 
   function toggleLayer() {
+    var svgOverlay = svgLayer;
     if ($('#layerCheckbox').is(':checked')) {
-      customLayer.addTo(map);
+      svgOverlay.addTo(map);
     } else {
-      customLayer.removeFrom(map);
+      svgOverlay.removeFrom(map);
     }
   }
 
