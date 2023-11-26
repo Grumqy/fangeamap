@@ -21,35 +21,30 @@
 </div>
 
 <script>
-  // Stworzenie mapy Leaflet
   var map = L.map('map').setView([0, 0], 2);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  // Dodanie warstwy SVG
   var svgLayer = L.svg();
   svgLayer.addTo(map);
 
-  // Wczytanie pliku SVG
-  $.get('map.svg', function(data) {
+  // Zmiana nazwy pliku SVG na "fangea_mapa.svg"
+  $.get('fangea_mapa.svg', function(data) {
     var svg = $(data).find('svg');
     svgLayer.addLayer(L.svgOverlay(svg[0], svg.getBounds()));
   });
 
-  // Funkcje przybliżania i oddalania
   map.scrollWheelZoom.disable();
   map.on('click', function() {
     map.scrollWheelZoom.enable();
   });
 
-  // Funkcja przesuwania
   map.dragging.disable();
   map.on('click', function() {
     map.dragging.enable();
   });
 
-  // Funkcja przełączania warstw
   function toggleLayer() {
     var svgOverlay = svgLayer._svgOverlay;
     if ($('#layerCheckbox').is(':checked')) {
@@ -59,7 +54,6 @@
     }
   }
 
-  // Funkcja pomiaru odległości
   var measurePoints = [];
   function measureDistance() {
     map.on('click', function(e) {
