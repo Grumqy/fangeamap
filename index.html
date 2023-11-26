@@ -17,10 +17,6 @@
   <button onclick="measureDistance()">Pomiń odległość</button>
   <span id="distanceDisplay"></span>
 </div>
-<div>
-  <button onclick="zoomIn()">Przybliż</button>
-  <button onclick="zoomOut()">Oddal</button>
-</div>
 
 <!-- Użyj tagu <object> do wczytania pliku SVG -->
 <object id="svgObject" type="image/svg+xml" data="fangea_mapa.svg"></object>
@@ -32,6 +28,9 @@
     controlIconsEnabled: true,
     fit: true,
     center: true,
+    mouseWheelZoomEnabled: true, // Włącz przybliżanie i oddalanie za pomocą kółka myszy
+    panEnabled: true, // Włącz swobodne przesuwanie widoku myszą
+    dblClickZoomEnabled: false, // Wyłącz przybliżanie za pomocą podwójnego kliknięcia
   });
 
   function toggleLayer() {
@@ -51,14 +50,6 @@
         svg.removeEventListener('click', measureDistance);
       }
     });
-  }
-
-  function zoomIn() {
-    panZoom.zoomIn();
-  }
-
-  function zoomOut() {
-    panZoom.zoomOut();
   }
 </script>
 
